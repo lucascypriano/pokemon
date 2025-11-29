@@ -5,69 +5,68 @@
   <meta charset="UTF-8" />
   <title>Pokédex</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <link rel="stylesheet" href="{% static 'css/pokedex.css' %}">
+  <!-- CSS separados -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/lista_tag.css' %}">
 </head>
-
 <body>
-  <!-- CABEÇALHO -->
-<header class="topbar">
-  <div class="logo">
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
-         alt="Pokebola" class="icone-pokebola">
-    <span>PokéDex</span>
-  </div>
 
-  <nav class="nav-links">
-    <a href="" class="active">Home</a>
-  </nav>
-</header>
-
-  <!-- SIDEBAR -->
-  <main class="page">
-    <div class="layout">
-
-      <!-- 1ª COLUNA: CONTEÚDO (LARGA) -->
-      <div class="content">
-        <!-- BUSCA -->
-        <section class="search-wrapper">
-          <form class="search-box" id="search-form">
-            <input
-              id="search-input"
-              class="search-input"
-              type="text"
-              placeholder="Busque pelo nome do pokémon"
-              autocomplete="off"
-            />
-            <button id="search-button" class="search-button" type="submit">
-              🔍
-            </button>
-          </form>
-        </section>
-
-        <!-- GRID -->
-        <section id="grid" class="grid"></section>
-
-        <!-- MENSAGEM -->
-        <div id="message" class="message" style="display:none;"></div>
-
-        <!-- PAGINAÇÃO -->
-        <section class="pagination">
-          <button id="prev-page">&larr; Anterior</button>
-          <div class="page-numbers" id="page-numbers"></div>
-          <button id="next-page">Próximo &rarr;</button>
-        </section>
-      </div>
-
-      <!-- Lista de Tags -->
-      <aside class="sidebar">
-        <h3>Tipos</h3>
-        <ul id="type-list" class="type-list">
-          <!-- Tags incluidas via JS -->
-        </ul>
-      </aside>
-
+  <!-- TOPO -->
+  <header class="topbar">
+    <div class="logo">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+           alt="Pokebola" class="icone-pokebola">
+      <!-- Logo da Pokédex em imagem -->
+      <img src="{% static 'img/pokedex-logo.png' %}" alt="Pokédex" class="logo-img">
     </div>
+    <nav class="nav-links">
+      <a href="#" id="nav-home" class="active">Home</a>
+      <a href="#" id="nav-pokedex">Pokédex</a>
+    </nav>
+  </header>
+
+  <!-- CONTEÚDO -->
+  <main class="page">
+
+    <!-- BARRA DE BUSCA CENTRALIZADA -->
+    <section class="search-wrapper">
+      <form class="search-box" id="search-form">
+        <input
+          id="search-input"
+          class="search-input"
+          type="text"
+          placeholder="Faça uma busca pelo nome do pokémon"
+          autocomplete="off"
+        />
+        <button id="search-button" class="search-button" type="submit">
+          🔍
+        </button>
+      </form>
+    </section>
+
+    <!-- FILTROS - CAIXA (drop-down) exibida ao clicar em "Pokédex" -->
+    <section id="filters" class="filters" style="display:none;">
+      <h2 class="filters-title">Filtrar por tipo</h2>
+      <ul class="type-list" id="type-list">
+        <!-- Itens criados via JavaScript -->
+      </ul>
+    </section>
+
+    <!-- GRID DE CARDS -->
+    <section id="grid" class="grid"></section>
+
+    <!-- MENSAGEM -->
+    <div id="message" class="message" style="display:none;"></div>
+
+    <!-- PAGINAÇÃO -->
+    <section class="pagination">
+      <button id="prev-page" class="pagination-link">&larr; Anterior</button>
+      <div class="page-numbers" id="page-numbers"></div>
+      <button id="next-page" class="pagination-link">Próximo &rarr;</button>
+    </section>
+
   </main>
 
   <script src="{% static 'js/pokedex.js' %}"></script>

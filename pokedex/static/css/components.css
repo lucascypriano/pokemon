@@ -1,149 +1,141 @@
-/* BUSCA */
+/* BARRA DE BUSCA (ESTILO FIGMA) */
 .search-box {
   position: relative;
-  max-width: 580px;
-  margin-bottom: 28px;
+  width: 100%;
+  max-width: 720px;
+  min-width: 360px;
+  height: 56px;
 }
 
+/* INPUT – Body Large / 16px / 24px / radius 28 */
 .search-input {
   width: 100%;
-  padding: 14px 48px 14px 20px;
-  border-radius: 999px;
+  height: 100%;
+  padding: 0 52px 0 24px;
+  border-radius: 28px;
   border: 1px solid #e5e7eb;
   background: #f9fafb;
-  font-size: 14px;
+
+  font-size: 16px;
+  line-height: 24px;
+  color: #111827;
 }
 
+/* ÍCONE DE BUSCA (BOTÃO) */
 .search-button {
   position: absolute;
-  right: 8px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
+
   border: none;
-  background: #3b82f6;
-  color: white;
+  background: transparent;
   cursor: pointer;
+  font-size: 18px;
 }
 
-/* GRID DE CARDS */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 480px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* CARD */
+/* CARD (ESTILO FIGMA) */
 .card {
-  background: #fff;
-  padding: 18px;
-  border-radius: 18px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  transition: 0.2s;
+  width: 100%;
+  max-width: 203px;
+  height: 285px;
+  background: #F0F3FF;
+  border-radius: 8px;
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-
-.card-top {
+/* TOPO DO CARD: ID + TIPO(S) */
+.card-top-info {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-.card-img-wrap {
-  background: #e0f2fe;
-  border-radius: 16px;
-  padding: 10px;
+.card-id {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.card-type-top {
+  font-weight: 500;
+  color: #4b5563;
+  text-align: right;
+}
+
+/* IMAGEM NO CARD */
+.card-image-wrapper {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 140px;
-  margin-bottom: 12px;
 }
 
-.card-img-wrap img {
-  width: 120px;
-  height: 120px;
+.card-image-wrapper img {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
 }
 
-.card-name {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
+/* TITULO DO CARD */
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 8px;
 }
 
 /* MENSAGEM */
 .message {
+  margin-top: 16px;
   text-align: center;
-  margin-top: 20px;
-  color: #6b7280;
+  font-size: 14px;
+  color: #4b5563;
 }
 
 /* PAGINAÇÃO */
 .pagination {
+  margin-top: 32px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 18px;
-  margin-top: 28px;
+  gap: 16px;
 }
 
-.page-number,
-.pagination button {
+.pagination-link {
+  padding: 6px 10px;
+  border-radius: 999px;
   border: none;
-  background: transparent;
+  background: #111827;
+  color: #ffffff;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.page-number {
+  border: none;
+  background: #e5e7eb;
+  cursor: pointer;
+  font-size: 13px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .page-number.active {
   background: #111827;
-  color: #fff;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-}
-
-/* TAGS DE TIPOS DENTRO DO CARD */
-.card-tipos {
-  display: flex;
-  gap: 6px;
-}
-
-.tag-tipo {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 6px;
-
-  border-radius: 999px;
-  border: 1px solid transparent;
-
-  font-size: 10px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.tag-tipo img {
-  width: 12px;
-  height: 12px;
+  color: #ffffff;
 }

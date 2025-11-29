@@ -1,29 +1,62 @@
-/* GRID PRINCIPAL */
-.layout {
-  display: grid;
-  grid-template-columns: 1fr 120px; /* conteúdo | sidebar fina */
-  gap: 26px;
+/* WRAPPER DA BUSCA CENTRALIZADA */
+.search-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 56px;
+  margin-bottom: 16px;
 }
 
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
+/* CAIXA DE FILTROS (DROP-DOWN) */
+.filters {
+  position: relative;
+  max-width: 320px;
+  margin: 0 auto 32px auto;
+  padding: 12px 12px 10px 12px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+  border: 1px solid #e5e7eb;
+  z-index: 20;
+}
+
+.filters-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* GRID DE CARDS – mobile-first */
+.grid {
+  display: grid;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* >= 1200px → 6 colunas (layout 6x3 com LIMITE=18) */
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(6, 203px);
   }
 }
 
-/* SIDEBAR */
-.sidebar {
-  background: #ffffff;
-  padding: 6px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  height: 420px;
-  overflow-y: auto;
+/* 900px – 1199px → 4 colunas */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .grid {
+    grid-template-columns: repeat(4, 203px);
+  }
 }
 
-.sidebar h3 {
-  font-size: 14px;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #111827;
+/* 600px – 899px → 3 colunas */
+@media (min-width: 600px) and (max-width: 899px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* <= 599px → 2 colunas */
+@media (max-width: 599px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

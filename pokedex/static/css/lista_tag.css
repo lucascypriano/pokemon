@@ -4,36 +4,33 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 /* TAG (cada tipo) */
 .type-list li {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 
-  padding: 4px 6px;
-  font-size: 11px;
-
-  max-width: 100px;
-  margin: 0;
+  padding: 6px 8px;
+  font-size: 12px;
 
   border-radius: 999px;
-  border: 1px solid transparent;
+  color: #111827;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.15s ease;
 }
 
-/* ÍCONE */
+/* ÍCONE DO TIPO */
 .type-list li img {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
 }
 
 /* Hover */
 .type-list li:hover {
-  filter: brightness(1.07);
+  filter: brightness(1.06);
 }
 
 /* Ativo */

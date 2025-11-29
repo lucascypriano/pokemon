@@ -7,23 +7,46 @@ const botaoProximo = document.getElementById("next-page");
 const paginacaoEl = document.getElementById("page-numbers");
 const formularioBusca = document.getElementById("search-form");
 const campoBusca = document.getElementById("search-input");
+const filtrosEl = document.getElementById("filters");
 const listaTiposEl = document.getElementById("type-list");
+const navHome = document.getElementById("nav-home");
+const navPokedex = document.getElementById("nav-pokedex");
 
-/* ========= CONFIGURAÇÕES ========= */
+/* ========= ESTADO ========= */
 
-const LIMITE = 12;
+const LIMITE = 18; // 6x3 cards por página
 let paginaAtual = 1;
 let totalPaginas = 1;
 let emBusca = false;
-let filtroTipoAtual = null;
 
-const TIPOS = [
-  "normal","fire","water","grass","electric","ice","fighting",
-  "poison","ground","flying","psychic","bug","rock","ghost",
-  "dragon","dark","steel","fairy"
-];
+// filtro de tipo
+let filtroTipoAtual = "";          // "" = sem filtro
+let usandoFiltroTipo = false;      // true quando estamos na listagem por tipo
+let listaPokemonsTipo = [];        // cache de pokémon daquele tipo
+let tipoCacheAtual = "";           // qual tipo está em cache
 
-/* ========= ÍCONES E CORES DOS TIPOS ========= */
+/* ========= TIPOS / ÍCONES / CORES ========= */
+
+const TIPOS_PT = {
+  grass: "Planta",
+  fire: "Fogo",
+  water: "Água",
+  bug: "Inseto",
+  normal: "Normal",
+  poison: "Veneno",
+  electric: "Elétrico",
+  ground: "Terra",
+  fairy: "Fada",
+  fighting: "Lutador",
+  psychic: "Psíquico",
+  rock: "Pedra",
+  ghost: "Fantasma",
+  ice: "Gelo",
+  dragon: "Dragão",
+  dark: "Sombrio",
+  steel: "Aço",
+  flying: "Voador"
+};
 
 const ICONES_TIPOS = {
   normal:   "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/normal.svg",
@@ -67,16 +90,7 @@ const CORES_TIPOS  = {
   fairy:    "#e43ae4ff"
 };
 
-const TIPOS_PT = {
-  grass: "Planta", fire: "Fogo", water: "Água", bug: "Inseto",
-  normal: "Normal", poison: "Veneno", electric: "Elétrico",
-  ground: "Terra", fairy: "Fada", fighting: "Lutador",
-  psychic: "Psíquico", rock: "Pedra", ghost: "Fantasma",
-  ice: "Gelo", dragon: "Dragão", dark: "Sombrio",
-  steel: "Aço", flying: "Voador"
-};
-
-/* ========= FUNÇÕES UTILITÁRIAS ========= */
+/* ========= UTILS ========= */
 
 function definirMensagem(texto) {
   mensagemEl.style.display = texto ? "block" : "none";
@@ -95,7 +109,7 @@ function capitalizar(texto) {
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
-function debounce(fn, delay) {
+function debounce(fn, delay = 400) {
   let timeout;
   return (...args) => {
     clearTimeout(timeout);
@@ -103,42 +117,97 @@ function debounce(fn, delay) {
   };
 }
 
-/* ========= CRIAÇÃO DO CARD ========= */
+// checa se um pokémon passa num filtro de tipo atual (pra busca por nome)
+function passaNoFiltroTipo(pokemon) {
+  if (!filtroTipoAtual) return true;
+  return pokemon.types.some(t => t.type.name === filtroTipoAtual);
+}
+
+/* ========= LISTA DE TIPOS (FILTROS) ========= */
+
+function criarListaTipos() {
+  if (!listaTiposEl) return;
+
+  listaTiposEl.innerHTML = "";
+
+  // "Todos"
+  const liTodos = document.createElement("li");
+  liTodos.dataset.type = "";
+  liTodos.style.backgroundColor = "#e5e7eb";
+  liTodos.innerHTML = `
+    <img src="${ICONES_TIPOS.normal}" alt="Todos" />
+    <span>Todos</span>
+  `;
+  liTodos.classList.add("active");
+  listaTiposEl.appendChild(liTodos);
+
+  // Demais tipos
+  Object.entries(TIPOS_PT).forEach(([tipoEn, rotuloPt]) => {
+    const li = document.createElement("li");
+    li.dataset.type = tipoEn;
+    li.style.backgroundColor = CORES_TIPOS[tipoEn] || "#e5e7eb";
+
+    const icone = ICONES_TIPOS[tipoEn] || ICONES_TIPOS.normal;
+
+    li.innerHTML = `
+      <img src="${icone}" alt="${rotuloPt}">
+      <span>${rotuloPt}</span>
+    `;
+    listaTiposEl.appendChild(li);
+  });
+
+  // Clique num tipo
+  listaTiposEl.addEventListener("click", (e) => {
+    const li = e.target.closest("li");
+    if (!li) return;
+
+    [...listaTiposEl.querySelectorAll("li")].forEach(item =>
+      item.classList.remove("active")
+    );
+    li.classList.add("active");
+
+    filtroTipoAtual = li.dataset.type || "";
+    paginaAtual = 1;
+    emBusca = false;
+
+    if (!filtroTipoAtual) {
+      // volta para lista normal
+      usandoFiltroTipo = false;
+      listaPokemonsTipo = [];
+      tipoCacheAtual = "";
+      carregarListaPokemons(paginaAtual);
+    } else {
+      // carrega lista específica daquele tipo
+      carregarListaPorTipo(filtroTipoAtual, paginaAtual);
+    }
+  });
+}
+
+/* ========= CARD DO POKÉMON ========= */
 
 function criarCardPokemon(pokemon) {
   const tipos = pokemon.types.map(t => t.type.name);
-  const img =
+  const tiposLabel = tipos
+    .map(t => TIPOS_PT[t] || capitalizar(t))
+    .join(" / ");
+
+  const imagem =
     pokemon.sprites?.other?.["official-artwork"]?.front_default ||
     pokemon.sprites?.front_default ||
     "";
-
-  // Gera HTML das tags de tipo
-  const tiposHTML = tipos.map(tipo => `
-    <span class="tag-tipo" style="
-      background:${CORES_TIPOS[tipo]};
-      border-color:${CORES_TIPOS[tipo]};
-    ">
-      <img src="${ICONES_TIPOS[tipo]}" alt="${tipo}">
-      ${capitalizar(tipo)}
-    </span>
-  `).join("");
 
   const card = document.createElement("article");
   card.className = "card";
 
   card.innerHTML = `
-    <div class="card-top">
-      <div class="card-tipos">
-        ${tiposHTML}
-      </div>
+    <div class="card-top-info">
       <span class="card-id">${formatarIdPokemon(pokemon.id)}</span>
+      <span class="card-type-top">${tiposLabel}</span>
     </div>
-
-    <div class="card-img-wrap">
-      <img src="${img}" alt="${pokemon.name}">
+    <div class="card-image-wrapper">
+      <img src="${imagem}" alt="${pokemon.name}" />
     </div>
-
-    <div class="card-name">${capitalizar(pokemon.name)}</div>
+    <h2 class="card-title">${capitalizar(pokemon.name)}</h2>
   `;
 
   return card;
@@ -158,28 +227,14 @@ function atualizarPaginacao(desativar = false) {
   botaoAnterior.disabled = paginaAtual === 1;
   botaoProximo.disabled = paginaAtual === totalPaginas;
 
-  const paginas = [];
-  if (paginaAtual > 1) paginas.push(paginaAtual - 1);
-  paginas.push(paginaAtual);
-  if (paginaAtual < totalPaginas) paginas.push(paginaAtual + 1);
-
-  paginas.forEach(num => {
-    const btn = document.createElement("button");
-    btn.textContent = num;
-    btn.className = "page-number" + (num === paginaAtual ? " active" : "");
-    btn.onclick = () => {
-      paginaAtual = num;
-      carregarListaPokemons(paginaAtual);
-    };
-    paginacaoEl.appendChild(btn);
-  });
+  const span = document.createElement("span");
+  span.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+  paginacaoEl.appendChild(span);
 }
 
-/* ========= LISTAGEM NORMAL ========= */
+/* ========= LISTAGEM GERAL (SEM FILTRO DE TIPO) ========= */
 
 async function carregarListaPokemons(pagina = 1) {
-  if (filtroTipoAtual) return;
-
   const offset = (pagina - 1) * LIMITE;
   const url = `https://pokeapi.co/api/v2/pokemon?limit=${LIMITE}&offset=${offset}`;
 
@@ -202,63 +257,46 @@ async function carregarListaPokemons(pagina = 1) {
 
   pokemons.forEach(p => gridEl.appendChild(criarCardPokemon(p)));
 
-  atualizarPaginacao();
+  usandoFiltroTipo = false;
+  paginaAtual = pagina;
+  atualizarPaginacao(false);
 }
 
-/* ========= BUSCA DINÂMICA ========= */
+/* ========= LISTAGEM POR TIPO ========= */
 
-async function buscarPokemonPorNome(nome) {
-  filtroTipoAtual = null;
-
-  if (!nome.trim()) {
-    emBusca = false;
-    return carregarListaPokemons(paginaAtual);
+async function carregarListaPorTipo(tipo, pagina = 1) {
+  if (!tipo) {
+    return carregarListaPokemons(1);
   }
 
-  definirMensagem("Buscando pokémon...");
+  definirMensagem("Carregando pokémons do tipo " + (TIPOS_PT[tipo] || tipo) + "...");
   limparGrid();
 
-  try {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nome.toLowerCase()}`);
+  // Busca lista completa daquele tipo (cache)
+  if (!listaPokemonsTipo.length || tipoCacheAtual !== tipo) {
+    const res = await fetch(`https://pokeapi.co/api/v2/type/${tipo}`);
+    const dados = await res.json();
 
-    if (!res.ok) {
-      definirMensagem("Nenhum Pokémon encontrado.");
-      return;
-    }
+    // dados.pokemon é [{pokemon:{name,url}, slot:1}, ...]
+    listaPokemonsTipo = dados.pokemon.map(p => p.pokemon);
+    tipoCacheAtual = tipo;
+  }
 
-    const poke = await res.json();
+  totalPaginas = Math.ceil(listaPokemonsTipo.length / LIMITE);
+
+  const offset = (pagina - 1) * LIMITE;
+  const slice = listaPokemonsTipo.slice(offset, offset + LIMITE);
+
+  if (!slice.length) {
     limparGrid();
-    definirMensagem("");
-
-    gridEl.appendChild(criarCardPokemon(poke));
-
-    emBusca = true;
-    atualizarPaginacao(true);
-
-  } catch {
-    definirMensagem("Erro na busca.");
+    definirMensagem("Nenhum pokémon encontrado para esse tipo.");
+    usandoFiltroTipo = true;
+    paginaAtual = pagina;
+    atualizarPaginacao(false);
+    return;
   }
-}
 
-/* ========= FILTRO POR TIPO ========= */
-
-async function buscarPokemonPorTipo(tipo) {
-  campoBusca.value = "";
-  filtroTipoAtual = tipo;
-  emBusca = true;
-
-  limparGrid();
-  definirMensagem("Carregando pokémons...");
-
-  const res = await fetch(`https://pokeapi.co/api/v2/type/${tipo}`);
-  const dados = await res.json();
-
-  const selecionados = dados.pokemon.slice(0, 30);
-
-  const detalhes = selecionados.map(p =>
-    fetch(p.pokemon.url).then(r => r.json())
-  );
-
+  const detalhes = slice.map(p => fetch(p.url).then(r => r.json()));
   const pokemons = await Promise.all(detalhes);
 
   limparGrid();
@@ -266,76 +304,138 @@ async function buscarPokemonPorTipo(tipo) {
 
   pokemons.forEach(p => gridEl.appendChild(criarCardPokemon(p)));
 
-  atualizarPaginacao(true);
+  usandoFiltroTipo = true;
+  paginaAtual = pagina;
+  atualizarPaginacao(false);
 }
 
-/* ========= LISTA DE TIPOS ========= */
+/* ========= BUSCA POR NOME ========= */
 
-function renderizarListaTipos() {
-  TIPOS.forEach(tipo => {
-    const li = document.createElement("li");
+async function buscarPokemonPorNome(nome) {
+  const termo = nome.trim();
 
-    li.innerHTML = `
-      <img src="${ICONES_TIPOS[tipo]}">
-      <span>${capitalizar(tipo)}</span>
-    `;
+  if (!termo) {
+    emBusca = false;
+    // se houver filtro de tipo, volta para lista por tipo; senão, lista geral
+    if (filtroTipoAtual) {
+      return carregarListaPorTipo(filtroTipoAtual, 1);
+    }
+    return carregarListaPokemons(1);
+  }
 
-    li.style.backgroundColor = CORES_TIPOS[tipo];
-    li.style.borderColor = CORES_TIPOS[tipo];
+  definirMensagem("Buscando pokémon...");
+  limparGrid();
 
-    li.onclick = () => {
-      if (li.classList.contains("active")) {
-        li.classList.remove("active");
-        filtroTipoAtual = null;
-        campoBusca.value = "";
-        emBusca = false;
-        carregarListaPokemons(1);
-        return;
-      }
+  try {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${termo.toLowerCase()}`);
+    if (!res.ok) {
+      definirMensagem("Nenhum Pokémon encontrado.");
+      atualizarPaginacao(true);
+      return;
+    }
 
-      document.querySelectorAll(".type-list li")
-              .forEach(e => e.classList.remove("active"));
+    const poke = await res.json();
+    limparGrid();
+    definirMensagem("");
 
-      li.classList.add("active");
-      buscarPokemonPorTipo(tipo);
-    };
+    // Se há filtro de tipo ativo, respeita
+    if (!passaNoFiltroTipo(poke)) {
+      definirMensagem("Nenhum Pokémon encontrado para esse filtro.");
+      emBusca = true;
+      atualizarPaginacao(true);
+      return;
+    }
 
-    listaTiposEl.appendChild(li);
-  });
+    gridEl.appendChild(criarCardPokemon(poke));
+
+    emBusca = true;
+    atualizarPaginacao(true); // desativa paginação (só 1 resultado)
+
+  } catch (e) {
+    definirMensagem("Erro na busca.");
+    atualizarPaginacao(true);
+  }
 }
 
 /* ========= EVENTOS ========= */
 
 botaoAnterior.onclick = () => {
-  if (paginaAtual > 1 && !emBusca) {
-    paginaAtual--;
-    carregarListaPokemons(paginaAtual);
+  if (paginaAtual <= 1 || emBusca) return;
+
+  const novaPagina = paginaAtual - 1;
+  if (usandoFiltroTipo && filtroTipoAtual) {
+    carregarListaPorTipo(filtroTipoAtual, novaPagina);
+  } else {
+    carregarListaPokemons(novaPagina);
   }
 };
 
 botaoProximo.onclick = () => {
-  if (paginaAtual < totalPaginas && !emBusca) {
-    paginaAtual++;
-    carregarListaPokemons(paginaAtual);
+  if (paginaAtual >= totalPaginas || emBusca) return;
+
+  const novaPagina = paginaAtual + 1;
+  if (usandoFiltroTipo && filtroTipoAtual) {
+    carregarListaPorTipo(filtroTipoAtual, novaPagina);
+  } else {
+    carregarListaPokemons(novaPagina);
   }
 };
+
+if (navHome && navPokedex) {
+  navHome.addEventListener("click", (e) => {
+    e.preventDefault();
+    navHome.classList.add("active");
+    navPokedex.classList.remove("active");
+
+    if (filtrosEl) filtrosEl.style.display = "none";
+
+    emBusca = false;
+    filtroTipoAtual = "";
+    usandoFiltroTipo = false;
+    listaPokemonsTipo = [];
+    tipoCacheAtual = "";
+    paginaAtual = 1;
+
+    carregarListaPokemons(1);
+  });
+
+  navPokedex.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (!filtrosEl) return;
+
+    const isHidden = filtrosEl.style.display === "none" || !filtrosEl.style.display;
+    filtrosEl.style.display = isHidden ? "block" : "none";
+
+    if (isHidden) {
+      navHome.classList.remove("active");
+      navPokedex.classList.add("active");
+    } else {
+      navPokedex.classList.remove("active");
+      navHome.classList.add("active");
+    }
+  });
+}
+
+/* Fecha a caixa de filtros ao sair com o cursor */
+if (filtrosEl) {
+  filtrosEl.addEventListener("mouseleave", () => {
+    filtrosEl.style.display = "none";
+    // não limpa o filtro, só fecha a UI
+  });
+}
 
 formularioBusca.addEventListener("submit", e => e.preventDefault());
 
 const buscaDinamica = debounce(valor => {
-  document.querySelectorAll(".type-list li")
-          .forEach(i => i.classList.remove("active"));
-
-  filtroTipoAtual = null;
   buscarPokemonPorNome(valor);
-
 }, 400);
 
 campoBusca.addEventListener("input", e => {
   buscaDinamica(e.target.value);
 });
 
-/* ========= INÍCIO ========= */
+/* ========= INICIALIZAÇÃO ========= */
 
-renderizarListaTipos();
+criarListaTipos();
 carregarListaPokemons(1);
