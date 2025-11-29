@@ -1,0 +1,43 @@
+/* LISTA DE TIPOS (TAGS) */
+.type-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+/* TAG (cada tipo) */
+.type-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 6px;
+  font-size: 11px;
+
+  max-width: 100px;
+  margin: 0;
+
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* ÍCONE */
+.type-list li img {
+  width: 14px;
+  height: 14px;
+}
+
+/* Hover */
+.type-list li:hover {
+  filter: brightness(1.07);
+}
+
+/* Ativo */
+.type-list li.active {
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.35);
+  font-weight: 600;
+}

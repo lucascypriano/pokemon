@@ -1,0 +1,149 @@
+/* BUSCA */
+.search-box {
+  position: relative;
+  max-width: 580px;
+  margin-bottom: 28px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 48px 14px 20px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 14px;
+}
+
+.search-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+
+/* GRID DE CARDS */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.card-img-wrap {
+  background: #e0f2fe;
+  border-radius: 16px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  margin-bottom: 12px;
+}
+
+.card-img-wrap img {
+  width: 120px;
+  height: 120px;
+}
+
+.card-name {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* MENSAGEM */
+.message {
+  text-align: center;
+  margin-top: 20px;
+  color: #6b7280;
+}
+
+/* PAGINAÇÃO */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.page-number,
+.pagination button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.page-number.active {
+  background: #111827;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+/* TAGS DE TIPOS DENTRO DO CARD */
+.card-tipos {
+  display: flex;
+  gap: 6px;
+}
+
+.tag-tipo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+
+  border-radius: 999px;
+  border: 1px solid transparent;
+
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tag-tipo img {
+  width: 12px;
+  height: 12px;
+}

@@ -1,0 +1,29 @@
+/* GRID PRINCIPAL */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 120px; /* conteúdo | sidebar fina */
+  gap: 26px;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  height: 420px;
+  overflow-y: auto;
+}
+
+.sidebar h3 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #111827;
+}

@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pokédex</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="{% static 'css/pokedex.css' %}">
+</head>
+
+<body>
+  <!-- CABEÇALHO -->
+<header class="topbar">
+  <div class="logo">
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
+         alt="Pokebola" class="icone-pokebola">
+    <span>PokéDex</span>
+  </div>
+
+  <nav class="nav-links">
+    <a href="" class="active">Home</a>
+  </nav>
+</header>
+
+  <!-- SIDEBAR -->
+  <main class="page">
+    <div class="layout">
+
+      <!-- 1ª COLUNA: CONTEÚDO (LARGA) -->
+      <div class="content">
+        <!-- BUSCA -->
+        <section class="search-wrapper">
+          <form class="search-box" id="search-form">
+            <input
+              id="search-input"
+              class="search-input"
+              type="text"
+              placeholder="Busque pelo nome do pokémon"
+              autocomplete="off"
+            />
+            <button id="search-button" class="search-button" type="submit">
+              🔍
+            </button>
+          </form>
+        </section>
+
+        <!-- GRID -->
+        <section id="grid" class="grid"></section>
+
+        <!-- MENSAGEM -->
+        <div id="message" class="message" style="display:none;"></div>
+
+        <!-- PAGINAÇÃO -->
+        <section class="pagination">
+          <button id="prev-page">&larr; Anterior</button>
+          <div class="page-numbers" id="page-numbers"></div>
+          <button id="next-page">Próximo &rarr;</button>
+        </section>
+      </div>
+
+      <!-- Lista de Tags -->
+      <aside class="sidebar">
+        <h3>Tipos</h3>
+        <ul id="type-list" class="type-list">
+          <!-- Tags incluidas via JS -->
+        </ul>
+      </aside>
+
+    </div>
+  </main>
+
+  <script src="{% static 'js/pokedex.js' %}"></script>
+</body>
+</html>
