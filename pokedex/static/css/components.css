@@ -1,44 +1,53 @@
-/* BARRA DE BUSCA (ESTILO FIGMA) */
+/* BARRA DE BUSCA */
 .search-box {
   position: relative;
   width: 100%;
-  max-width: 720px;
-  min-width: 360px;
-  height: 56px;
+  max-width: 720px;   /* largura máxima = 720px */
+  min-width: 360px;   /* não encolhe demais no mobile */
+  height: 56px;       /* altura do Figma */
 }
 
-/* INPUT – Body Large / 16px / 24px / radius 28 */
+/* INPUT – cor e borda */
 .search-input {
   width: 100%;
   height: 100%;
-  padding: 0 52px 0 24px;
+  padding: 0 56px 0 24px;  /* espaço pro texto + ícone à direita */
   border-radius: 28px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border: none;            /* sem borda aparente */
+  background: #F2F2F7;     /* mesma cor clarinha do Figma */
 
   font-size: 16px;
   line-height: 24px;
   color: #111827;
 }
 
-/* ÍCONE DE BUSCA (BOTÃO) */
+
+/* ÍCONE DE BUSCA */
 .search-button {
   position: absolute;
-  right: 12px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
-
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 18px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* CARD (ESTILO FIGMA) */
+.search-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* CARD */
 .card {
   width: 100%;
   max-width: 203px;
-  height: 285px;
+  height: auto;       /* deixa o card se ajustar ao conteudo, evitando area em branco */
   background: #F0F3FF;
   border-radius: 8px;
   padding: 12px;
@@ -63,18 +72,28 @@
   color: #1f2937;
 }
 
-.card-type-top {
-  font-weight: 500;
-  color: #4b5563;
-  text-align: right;
+.card-types-top {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.type-pill {
+  border-radius: 999px;
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 18px;
+  color: #111827; /* texto escuro sobre a cor do tipo */
 }
 
 /* IMAGEM NO CARD */
 .card-image-wrapper {
-  flex: 1;
+  flex: 0.5;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 140px; /* limita a área para ficar próxima ao tamanho da imagem */
 }
 
 .card-image-wrapper img {
@@ -87,7 +106,7 @@
 .card-title {
   font-size: 18px;
   font-weight: 700;
-  margin-top: 8px;
+  margin-top: 1px;
 }
 
 /* MENSAGEM */
