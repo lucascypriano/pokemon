@@ -24,6 +24,7 @@ let filtroTipoAtual = "";          // "" = sem filtro
 let usandoFiltroTipo = false;      // true quando estamos na listagem por tipo
 let listaPokemonsTipo = [];        // cache de pokémon daquele tipo
 let tipoCacheAtual = "";           // qual tipo está em cache
+let listaPokemonsCache = [];       // lista completa (nome+url) cacheada na inicialização
 
 /* ========= TIPOS / ÍCONES / CORES ========= */
 
@@ -356,7 +357,7 @@ async function buscarPokemonPorNomeOuTipo(entrada) {
     return carregarListaPokemons(1);
   }
 
-  // 1) Verifica se é um tipo em português
+  // 1) Verifica se ? um tipo em portugu?s
   const tipoEn = TIPOS_BUSCA_PT[termo];
   if (tipoEn) {
     filtroTipoAtual = tipoEn;
@@ -375,14 +376,53 @@ async function buscarPokemonPorNomeOuTipo(entrada) {
     return carregarListaPorTipo(tipoEn, 1);
   }
 
-  // 2) Se não é tipo, tenta como nome de Pokémon
-  definirMensagem("Buscando pokémon...");
+    // tenta usar cache local de nomes (listaPokemonsCache) para busca parcial
+  if (listaPokemonsCache.length) {
+    const encontrados = listaPokemonsCache
+      .filter(p => p.name.includes(termo))
+      .slice(0, LIMITE);
+
+    if (encontrados.length) {
+      definirMensagem("Buscando pokemon...");
+      limparGrid();
+
+      try {
+        const detalhes = await Promise.all(
+          encontrados.map(async (p) => {
+            const res = await fetch(p.url);
+            if (!res.ok) return null;
+            return res.json();
+          })
+        );
+
+        const filtrados = detalhes.filter(Boolean).filter(poke => passaNoFiltroTipo(poke));
+
+        if (!filtrados.length) {
+          definirMensagem("Nenhum Pokemon encontrado para esse filtro.");
+          emBusca = true;
+          atualizarPaginacao(true);
+          return;
+        }
+
+        filtrados.forEach(p => gridEl.appendChild(criarCardPokemon(p)));
+        emBusca = true;
+        atualizarPaginacao(true);
+        definirMensagem("");
+        return;
+      } catch (e) {
+        // se falhar, cai no fallback
+      }
+    }
+  }
+
+  // fallback: consulta direta na API
+  definirMensagem("Buscando pokemon...");
   limparGrid();
 
   try {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${termo}`);
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(termo)}`);
     if (!res.ok) {
-      definirMensagem("Nenhum Pokémon encontrado.");
+      definirMensagem("Nenhum Pokemon encontrado.");
       atualizarPaginacao(true);
       return;
     }
@@ -391,9 +431,9 @@ async function buscarPokemonPorNomeOuTipo(entrada) {
     limparGrid();
     definirMensagem("");
 
-    // Se há filtro de tipo ativo, respeita
+    // Se ha filtro de tipo ativo, respeita
     if (!passaNoFiltroTipo(poke)) {
-      definirMensagem("Nenhum Pokémon encontrado para esse filtro.");
+      definirMensagem("Nenhum Pokemon encontrado para esse filtro.");
       emBusca = true;
       atualizarPaginacao(true);
       return;
@@ -401,7 +441,7 @@ async function buscarPokemonPorNomeOuTipo(entrada) {
 
     gridEl.appendChild(criarCardPokemon(poke));
     emBusca = true;
-    atualizarPaginacao(true); // desativa paginação (só 1 resultado)
+    atualizarPaginacao(true);
 
   } catch (e) {
     definirMensagem("Erro na busca.");
@@ -466,5 +506,17 @@ if (campoBusca) {
   });
 }
 
+async function carregarListaCompletaCache() {
+  try {
+    const res = await fetch("/api/pokemon-names/");
+    if (res.ok) {
+      listaPokemonsCache = await res.json();
+    }
+  } catch (e) {
+    // se falhar, segue sem cache
+  }
+}
+
 criarListaTipos();
+carregarListaCompletaCache();
 carregarListaPokemons(1);

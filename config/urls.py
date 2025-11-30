@@ -14,10 +14,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path
 from pokedex import views
 
 urlpatterns = [
-    path("", views.home, name="Inicio")
+    path("", views.home, name="Inicio"),
+    path("api/pokemon/<str:nome>/", views.pokemon_detail, name="pokemon_detail"),
+    path("api/pokemon-names/", views.pokemon_names, name="pokemon_names"),
 ]
