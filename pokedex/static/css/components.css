@@ -158,3 +158,95 @@
   background: #111827;
   color: #ffffff;
 }
+
+/* ===== PAGINAÇÃO – ESTILO FIGMA (versão quadrado preto + números) ===== */
+.pagination {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+/* Botões "Anterior" e "Próximo" */
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  font-size: 14px;
+  font-weight: 400;
+  color: #111827;
+  cursor: pointer;
+}
+
+.pagination-link:disabled {
+  color: #9CA3AF;
+  cursor: default;
+}
+
+/* Container dos números */
+.page-numbers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Números de página padrão (2, 3, etc.) */
+.page-numbers button,
+.page-number {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #111827;
+  cursor: pointer;
+}
+
+/* Página atual: quadrado preto arredondado */
+.page-numbers button.active,
+.page-number.active,
+.page-numbers button[aria-current="page"],
+.page-number[aria-current="page"] {
+  background: #111827;
+  color: #ffffff;
+  border-radius: 8px;
+  min-width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+/* Ellipsis "..." caso exista */
+.page-numbers span,
+.page-numbers .ellipsis {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #9CA3AF;
+  cursor: default;
+}
+
+/* Responsivo: aproxima um pouco os elementos */
+@media (max-width: 480px) {
+  .pagination {
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .page-numbers {
+    gap: 8px;
+  }
+}

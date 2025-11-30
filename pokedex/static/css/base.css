@@ -45,15 +45,15 @@ body {
 }
 
 .nav-links a {
-  color: #6b7280;
+  color: #000000;
   text-decoration: none;
   padding: 6px 10px;
   border-radius: 999px;
 }
 
 .nav-links a.active {
-  background: #111827;
-  color: #ffffff;
+  background: #F5F5F5;
+  color: #000000;
 }
 
 /* CONTAINER GERAL */

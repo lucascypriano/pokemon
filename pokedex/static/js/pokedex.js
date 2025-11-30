@@ -259,13 +259,58 @@ function atualizarPaginacao(desativar = false) {
     return;
   }
 
+  // controla apenas habilitar/desabilitar os botões Anterior/Próximo
+  botaoAnterior.disabled = paginaAtual === 1;
+  botaoProximo.disabled = paginaAtual === totalPaginas;
+
+  // se só existir uma página, não precisamos renderizar números no centro
+  if (totalPaginas <= 1) {
+    return;
+  }
+
+  const paginas = [];
+
+  // Caso esteja na primeira página → mostra 1, 2 e 3 (se existirem)
+  if (paginaAtual === 1) {
+    paginas.push(1); // página atual
+
+    if (totalPaginas >= 2) {
+      paginas.push(2);
+    }
+    if (totalPaginas >= 3) {
+      paginas.push(3);
+    }
+  } else {
+    // Demais casos → página anterior, atual e próxima
+    if (paginaAtual > 1) {
+      paginas.push(paginaAtual - 1);
+    }
+
+    paginas.push(paginaAtual);
+
+    if (paginaAtual < totalPaginas) {
+      paginas.push(paginaAtual + 1);
+    }
+  }
+
+  paginas.forEach((numero) => {
+    const span = document.createElement("span");
+    span.textContent = numero;
+    span.classList.add("page-number");
+    if (numero === paginaAtual) {
+      span.classList.add("active");
+    }
+    paginacaoEl.appendChild(span);
+  });
+}
+
   botaoAnterior.disabled = paginaAtual === 1;
   botaoProximo.disabled = paginaAtual === totalPaginas;
 
   const span = document.createElement("span");
   span.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
   paginacaoEl.appendChild(span);
-}
+
 
 /* ========= LISTAGEM GERAL (SEM FILTRO DE TIPO) ========= */
 
