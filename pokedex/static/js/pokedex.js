@@ -23,9 +23,8 @@ let emBusca = false;
 // filtro de tipo
 let filtroTipoAtual = "";          // "" = sem filtro
 let usandoFiltroTipo = false;      // true quando estamos na listagem por tipo
-let listaPokemonsTipo = [];        // cache de pokémon daquele tipo
-let tipoCacheAtual = "";           // qual tipo está em cache
-let listaPokemonsCache = [];       // lista completa (nome+url) cacheada na inicialização
+const cachePokemonsPorTipo = {};   // { tipo: { lista: [], detalhes: { [url]: poke } } }
+let listaPokemonsCache = [];       // lista completa (nome+url) cacheada na inicializacao
 let filtrosVisiveis = false;       // controla drop-down de filtros
 
 /* ========= TIPOS / ÍCONES / CORES ========= */
@@ -211,8 +210,6 @@ function criarListaTipos() {
     if (!filtroTipoAtual) {
       // volta para lista normal
       usandoFiltroTipo = false;
-      listaPokemonsTipo = [];
-      tipoCacheAtual = "";
       carregarListaPokemons(paginaAtual);
     } else {
       // carrega lista específica daquele tipo
@@ -357,35 +354,44 @@ async function carregarListaPorTipo(tipo, pagina = 1) {
     return carregarListaPokemons(1);
   }
 
-  definirMensagem("Carregando pokémons do tipo " + (TIPOS_PT[tipo] || tipo) + "...");
+  definirMensagem("Carregando pokemons do tipo " + (TIPOS_PT[tipo] || tipo) + "...");
   limparGrid();
 
   // Busca lista completa daquele tipo (cache)
-  if (!listaPokemonsTipo.length || tipoCacheAtual !== tipo) {
+  if (!cachePokemonsPorTipo[tipo]) {
     const res = await fetch(`https://pokeapi.co/api/v2/type/${tipo}`);
     const dados = await res.json();
 
-    // dados.pokemon é [{pokemon:{name,url}, slot:1}, ...]
-    listaPokemonsTipo = dados.pokemon.map(p => p.pokemon);
-    tipoCacheAtual = tipo;
+    cachePokemonsPorTipo[tipo] = {
+      lista: dados.pokemon.map(p => p.pokemon),
+      detalhes: {}
+    };
   }
 
-  totalPaginas = Math.ceil(listaPokemonsTipo.length / LIMITE);
+  const { lista, detalhes } = cachePokemonsPorTipo[tipo];
+  totalPaginas = Math.ceil(lista.length / LIMITE);
 
   const offset = (pagina - 1) * LIMITE;
-  const slice = listaPokemonsTipo.slice(offset, offset + LIMITE);
+  const slice = lista.slice(offset, offset + LIMITE);
 
   if (!slice.length) {
     limparGrid();
-    definirMensagem("Nenhum pokémon encontrado para esse tipo.");
+    definirMensagem("Nenhum pokemon encontrado para esse tipo.");
     usandoFiltroTipo = true;
     paginaAtual = pagina;
     atualizarPaginacao(false);
     return;
   }
 
-  const detalhes = slice.map(p => fetch(p.url).then(r => r.json()));
-  const pokemons = await Promise.all(detalhes);
+  const pokemons = await Promise.all(
+    slice.map(async (p) => {
+      if (detalhes[p.url]) return detalhes[p.url];
+      const res = await fetch(p.url);
+      const data = await res.json();
+      detalhes[p.url] = data;
+      return data;
+    })
+  );
 
   limparGrid();
   definirMensagem("");
@@ -537,8 +543,6 @@ if (navHome && navPokedex) {
     emBusca = false;
     filtroTipoAtual = "";
     usandoFiltroTipo = false;
-    listaPokemonsTipo = [];
-    tipoCacheAtual = "";
     paginaAtual = 1;
 
     carregarListaPokemons(1);
