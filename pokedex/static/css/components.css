@@ -62,9 +62,8 @@
 
 /* CARD */
 .card {
-  width: 100%;
-  max-width: 203px;
-  height: auto;       /* deixa o card se ajustar ao conteudo, evitando area em branco */
+  width: 203px;
+  height: 285px;
   background: #F0F3FF;
   border-radius: 8px;
   padding: 12px;
