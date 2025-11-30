@@ -2,7 +2,8 @@
 .search-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 56px;
+  width: 100%;
+  margin-top: 01px;   /* mais próximo do cabeçalho */
   margin-bottom: 16px;
 }
 
