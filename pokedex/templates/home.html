@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <title>Pokédex</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/png">
   <!-- CSS separados -->
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="{% static 'css/layout.css' %}">
@@ -16,9 +17,7 @@
   <!-- TOPO -->
   <header class="topbar">
     <div class="logo">
-      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
-           alt="Pokebola" class="icone-pokebola">
-      <!-- Logo da Pokédex em imagem -->
+      <!-- Removido o ícone da pokébola -->
       <img src="{% static 'img/pokedex-logo.png' %}" alt="Pokédex" class="logo-img">
     </div>
     <nav class="nav-links">
@@ -40,8 +39,10 @@
           placeholder="Faça uma busca pelo nome do pokémon"
           autocomplete="off"
         />
-        <button id="search-button" class="search-button" type="submit">
-          🔍
+        <button id="search-button" class="search-button" type="submit" aria-label="Buscar">
+          <img src="{% static 'img/loupe.png' %}"
+               alt=""
+               class="search-icon">
         </button>
       </form>
     </section>
