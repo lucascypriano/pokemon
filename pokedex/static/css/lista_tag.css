@@ -1,20 +1,43 @@
 /* LISTA DE TIPOS (TAGS) */
 .type-list {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
   align-items: stretch;
+  padding: 0;
+  margin: 0;
+}
+
+/* Breakpoints para mobile: reduzir colunas para caber melhor */
+@media (max-width: 900px) {
+  .type-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .type-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .type-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* TAG (cada tipo) */
 .type-list li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
 
-  padding: 6px 8px;
+  padding: 8px 10px;
   font-size: 12px;
+  text-align: center;
 
   border-radius: 999px;
   color: #111827;

@@ -10,7 +10,8 @@
 /* CAIXA DE FILTROS (DROP-DOWN) */
 .filters {
   position: relative;
-  max-width: 320px;
+  width: 100%;
+  max-width: 720px;
   margin: 0 auto 32px auto;
   padding: 12px 12px 10px 12px;
   border-radius: 16px;

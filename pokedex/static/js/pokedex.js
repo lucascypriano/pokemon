@@ -7,6 +7,7 @@ const botaoProximo = document.getElementById("next-page");
 const paginacaoEl = document.getElementById("page-numbers");
 const formularioBusca = document.getElementById("search-form");
 const campoBusca = document.getElementById("search-input");
+const botaoFiltro = document.getElementById("filter-button");
 const filtrosEl = document.getElementById("filters");
 const listaTiposEl = document.getElementById("type-list");
 const navHome = document.getElementById("nav-home");
@@ -25,6 +26,7 @@ let usandoFiltroTipo = false;      // true quando estamos na listagem por tipo
 let listaPokemonsTipo = [];        // cache de pokémon daquele tipo
 let tipoCacheAtual = "";           // qual tipo está em cache
 let listaPokemonsCache = [];       // lista completa (nome+url) cacheada na inicialização
+let filtrosVisiveis = false;       // controla drop-down de filtros
 
 /* ========= TIPOS / ÍCONES / CORES ========= */
 
@@ -78,7 +80,7 @@ const CORES_TIPOS  = {
   grass:    "#00ff11ff",
   ice:      "#def1f5ff",
   fighting: "#8b5d4dff",
-  poison:   "#0ae754ff",
+  poison:   "#ffa600ff",
   ground:   "#635642ff",
   flying:   "#8b99b8ff",
   psychic:  "#f082c8ff",
@@ -145,6 +147,12 @@ function debounce(fn, delay = 400) {
     clearTimeout(timeout);
     timeout = setTimeout(() => fn(...args), delay);
   };
+}
+
+function definirVisibilidadeFiltros(visivel) {
+  if (!filtrosEl) return;
+  filtrosEl.style.display = visivel ? "block" : "none";
+  filtrosVisiveis = visivel;
 }
 
 // checa se um pokémon passa num filtro de tipo atual (pra busca por nome)
@@ -234,10 +242,10 @@ function criarCardPokemon(pokemon) {
 
   card.innerHTML = `
     <div class="card-top-info">
-      <span class="card-id">${formatarIdPokemon(pokemon.id)}</span>
       <div class="card-types-top">
         ${tiposHtml}
       </div>
+      <span class="card-id">${formatarIdPokemon(pokemon.id)}</span>
     </div>
     <div class="card-image-wrapper">
       <img src="${imagem}" alt="${pokemon.name}" />
@@ -524,7 +532,7 @@ if (navHome && navPokedex) {
     navHome.classList.add("active");
     navPokedex.classList.remove("active");
 
-    if (filtrosEl) filtrosEl.style.display = "none";
+    definirVisibilidadeFiltros(false);
 
     emBusca = false;
     filtroTipoAtual = "";
@@ -536,8 +544,22 @@ if (navHome && navPokedex) {
     carregarListaPokemons(1);
   });
 
+  navPokedex.addEventListener("click", (e) => {
+    e.preventDefault();
+    navPokedex.classList.add("active");
+    navHome.classList.remove("active");
+
+    definirVisibilidadeFiltros(true);
+  });
+
 }
 
+
+if (botaoFiltro) {
+  botaoFiltro.addEventListener("click", () => {
+    definirVisibilidadeFiltros(!filtrosVisiveis);
+  });
+}
 
 formularioBusca.addEventListener("submit", e => e.preventDefault());
 
